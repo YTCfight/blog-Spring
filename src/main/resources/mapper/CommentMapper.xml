@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="frank.mapper.CommentMapper" >
+  <resultMap id="BaseResultMap" type="frank.model.Comment" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="article_id" property="articleId" jdbcType="BIGINT" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <association property="user" resultMap="frank.mapper.UserMapper.BaseResultMap">
+      <id column="user_id" property="id" jdbcType="BIGINT" />
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from comment
+    where content = #{content,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="frank.model.Comment" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into comment (user_id, article_id, content,created_at)
+    select user_id,
+           #{articleId,jdbcType=BIGINT},
+           #{content,jdbcType=VARCHAR},
+           #{createdAt,jdbcType=TIMESTAMP}
+        from article
+    where article.id = #{articleId,jdbcType=BIGINT}
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="frank.model.Comment" >
+    update comment
+    set user_id = #{userId,jdbcType=BIGINT},
+      article_id = #{articleId,jdbcType=BIGINT},
+      content = #{content,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, user_id, article_id, content, created_at
+    from comment
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, user_id, article_id, content, created_at
+    from comment
+  </select>
+  <select id="queryComments" resultMap="BaseResultMap" >
+   select c.id,
+       c.user_id,
+       c.article_id,
+       c.content,
+       c.created_at,
+       u.avatar,
+       u.nickname
+from comment c
+         join user u on c.user_id = u.id
+where c.article_id = #{id,jdbcType=BIGINT}
+  </select>
+</mapper>

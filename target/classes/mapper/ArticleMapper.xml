@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="frank.mapper.ArticleMapper" >
+  <resultMap id="BaseResultMap" type="frank.model.Article" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="cover_image" property="coverImage" jdbcType="VARCHAR" />
+    <result column="category_id" property="categoryId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="view_count" property="viewCount" jdbcType="BIGINT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="comment_count" property="commentCount" jdbcType="INTEGER" />
+    <association property="author" resultMap="frank.mapper.UserMapper.BaseResultMap">
+      <id column="user_id" property="id" jdbcType="BIGINT" />
+    </association>
+  </resultMap>
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+    delete from article
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="frank.model.Article" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into article (user_id, cover_image, category_id, 
+      status, title, content, 
+      view_count, created_at, updated_at
+      )
+    values (#{userId,jdbcType=BIGINT}, #{coverImage,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER}, 
+      #{status,jdbcType=TINYINT}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{viewCount,jdbcType=BIGINT}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="frank.model.Article" >
+    update article
+    set user_id = #{userId,jdbcType=BIGINT},
+      cover_image = #{coverImage,jdbcType=VARCHAR},
+      category_id = #{categoryId,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
+      title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      view_count = #{viewCount,jdbcType=BIGINT},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select a.id,
+           a.user_id,
+           a.cover_image,
+           a.category_id,
+           a.status,
+           a.title,
+           a.content,
+           a.view_count,
+           a.created_at,
+           a.updated_at,
+           u.avatar,
+           u.nickname,
+           count(c.article_id) comment_count
+from article a
+         join user u on a.user_id = u.id
+         join comment c on a.id = c.article_id
+    where a.id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select a.id,
+           a.user_id,
+           a.cover_image,
+           a.category_id,
+           a.status,
+           a.title,
+           a.content,
+           a.view_count,
+           a.created_at,
+           a.updated_at,
+           u.avatar,
+           u.nickname,
+           count(c.article_id) comment_count
+from article a
+         join user u on a.user_id = u.id
+         join comment c on a.id = c.article_id
+group by a.id
+  </select>
+    <select id="queryArticlesByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id,
+           user_id,
+           cover_image,
+           category_id,
+           status,
+           title,
+           content,
+           view_count,
+           created_at,
+           updated_at
+    from article
+    where user_id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateByCondition" parameterType="frank.model.Article" >
+    update article
+    set
+      <if test="userId != null">
+          user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="coverImage != null and coverImage != ''">
+          cover_image = #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId != null">
+          category_id = #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+          status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="title != null and title != ''">
+          title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null and content != ''">
+          content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="viewCount != null">
+          view_count = #{viewCount,jdbcType=BIGINT},
+      </if>
+      <if test="createdAt != null">
+          created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+          updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+      </if>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
