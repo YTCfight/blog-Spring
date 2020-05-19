@@ -16,7 +16,7 @@ public class BlogConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/images/**")
                 .excludePathPatterns("plugins/editor/**")
                 .excludePathPatterns("/")
-                .excludePathPatterns("/login");
-                //.excludePathPatterns("/a/*"); // * 匹配一级路径 /a/1111,不能匹配多级 /a/1/2
+                .excludePathPatterns("/login")
+                .excludePathPatterns("/a/*"); // * 匹配一级路径 /a/1111,不能匹配多级 /a/1/2
     }
 }
