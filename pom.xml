@@ -19,7 +19,7 @@
         <!--        <java.version>1.8</java.version>-->
         <!--        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
         <mybatis-spring-boot-starter.version>2.1.1</mybatis-spring-boot-starter.version>
-        <mysql.version>5.1.47</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
     </properties>
 
     <dependencies>
